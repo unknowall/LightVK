@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="GenSpv.bat" />
+    <None Remove="SDL2.dll" />
+    <None Remove="triangle.frag" />
+    <None Remove="triangle.frag.spv" />
+    <None Remove="triangle.vert" />
+    <None Remove="triangle.vert.spv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LightVK\LightVK.csproj" />
+  </ItemGroup>
+
+</Project>
