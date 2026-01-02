@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+        <OutputType>Library</OutputType>
+        <LangVersion>9</LangVersion>
+        <NullableContextOptions>disable</NullableContextOptions>
+        <RootNamespace>LightVK</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <Title>LightVK</Title>
+        <Version>1.0.0</Version>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <Authors>unknowall - sgfree@hotmail.com</Authors>
+        <RepositoryUrl>https://github.com/unknowall/LightVKL</RepositoryUrl>
+        <Description>LightVK - A Vulkan C# low-level bindings</Description>
+        <PackageReadmeFile>README-EN.md</PackageReadmeFile>
+        <Copyright>unknowall - sgfree@hotmail.com</Copyright>
+        <PackageProjectUrl>https://github.com/unknowall/LightVK</PackageProjectUrl>
+        <PackageTags>vulkan</PackageTags>
+        <PackageLicenseExpression> MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<NoWarn>1701;1702;8618;8765</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<NoWarn>1701;1702;8618;8765</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\README-EN.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
+
+</Project>
