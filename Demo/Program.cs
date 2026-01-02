@@ -21,7 +21,7 @@ namespace LightVKMinimalDemo
         private VkDescriptorPool _descriptorPool;
         private VkDescriptorSet _descriptorSet;
 
-        // 同步对象封装
+        // Synchronization object encapsulation
         private class FrameFence
         {
             public VkSemaphore ImageAvailable;
@@ -29,7 +29,7 @@ namespace LightVKMinimalDemo
             public VkFence InFlightFence;
         }
 
-        // 三角形顶点数据
+        // Triangle vertex data structure
         [StructLayout(LayoutKind.Sequential)]
         private struct Vertex
         {
@@ -57,7 +57,7 @@ namespace LightVKMinimalDemo
         {
             File.Copy("../../../SDL2.dll", "./SDL2.dll", true);
 
-            // 1. 创建窗口
+            // 1. Create window
             if (SDL.SDL_Init(SDL.SDL_INIT_VIDEO | SDL.SDL_INIT_AUDIO) != 0)
             {
                 Console.Error.WriteLine("Couldn't initialize SDL");
@@ -85,57 +85,57 @@ namespace LightVKMinimalDemo
                 hinstance = GetWindowLong32(windowhwnd, -6);
             }
 
-            // 2. 初始化VulkanDevice
+            // 2. Initialize VulkanDevice
             _device = new VulkanDevice();
-            _device.VulkanInit(windowhwnd, hinstance, true); // 开启验证层
+            _device.VulkanInit(windowhwnd, hinstance, true); // Enable validation layers
         }
 
         public void Initialize()
         {
-            // 3. 创建渲染通道（RenderPass）
+            // 3. Create RenderPass
             _renderPass = _device.CreateRenderPass(
                 _device.ChooseSurfaceFormat().format,
                 VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_CLEAR,
                 VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
                 VkImageLayout.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
-            // 4. 创建交换链（SwapChain）
+            // 4. Create SwapChain
             _swapChain = _device.CreateSwapChain(_renderPass, 800, 600);
 
-            // 5. 创建顶点缓冲区（Buffer）
+            // 5. Create Vertex Buffer
             CreateVertexBuffer();
 
-            // 6. 创建描述符集布局和描述符集
+            // 6. Create Descriptor Set Layout and Descriptor Set
             ConfigDescriptorSet();
 
-            // 7. 创建图形管线（Pipeline）
+            // 7. Create Graphics Pipeline
             CreatePipeline();
 
-            // 8. 创建命令缓冲区（CommandBuffer）
+            // 8. Create Command Buffers
             _cmdBuffers = _device.CreateCommandBuffers(_swapChain.Images.Count);
 
-            // 9. 创建同步对象（Semaphore/Fence）
+            // 9. Create Synchronization Objects (Semaphore/Fence)
             CreateSyncObjects();
 
-            Console.WriteLine("LightVK Demo 初始化完成！");
+            Console.WriteLine("LightVK Demo initialization completed!");
         }
 
         private unsafe void CreateVertexBuffer()
         {
-            // 三角形顶点数据
+            // Triangle vertex data
             var vertices = new[]
             {
-                new Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 0.0f), // 红
-                new Vertex(0.5f, -0.5f, 0.0f, 1.0f, 0.0f),  // 绿
-                new Vertex(0.0f, 0.5f, 0.0f, 0.0f, 1.0f)    // 蓝
+                new Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 0.0f), // Red
+                new Vertex(0.5f, -0.5f, 0.0f, 1.0f, 0.0f),  // Green
+                new Vertex(0.0f, 0.5f, 0.0f, 0.0f, 1.0f)    // Blue
             };
 
-            // 创建顶点缓冲区
+            // Create vertex buffer
             _vertexBuffer = _device.CreateBuffer(
                 (ulong)(vertices.Length * Marshal.SizeOf<Vertex>()),
                 VkBufferUsageFlags.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VkBufferUsageFlags.VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
-            // 映射内存并写入顶点数据
+            // Map memory and write vertex data
             void* mappedData;
             vkMapMemory(_device.device, _vertexBuffer.stagingMemory, 0, VK_WHOLE_SIZE, 0, &mappedData);
             Marshal.Copy(
@@ -170,7 +170,7 @@ namespace LightVKMinimalDemo
             {
                 new VkDescriptorSetLayoutBinding {
                     binding = 0,
-                    descriptorCount = 0, //此处会触发验证层错误，DEMO仅演示流程，实际使用时请设置正确的值，并绑定资源
+                    descriptorCount = 0, // This will trigger a validation layer error. This DEMO only demonstrates the process. Please set the correct value and bind resources when using it in practice
                     descriptorType = VkDescriptorType.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                     stageFlags = VkShaderStageFlags.VK_SHADER_STAGE_FRAGMENT_BIT
                 }
@@ -204,11 +204,11 @@ namespace LightVKMinimalDemo
 
         private void CreatePipeline()
         {
-            // 顶点/片段着色器（SPIR-V字节码）
+            // Vertex/Fragment shaders (SPIR-V bytecode)
             var vertShader = _device.LoadShaderFile("../../../triangle.vert.spv");
             var fragShader = _device.LoadShaderFile("../../../triangle.frag.spv");
 
-            // 顶点属性描述（对应Vertex结构体）
+            // Vertex attribute description (corresponding to Vertex struct)
             var vertexAttributes = new[]
             {
                 new VkVertexInputAttributeDescription
@@ -216,18 +216,18 @@ namespace LightVKMinimalDemo
                     location = 0,
                     binding = 0,
                     format = VkFormat.VK_FORMAT_R32G32_SFLOAT,
-                    offset = 0 // Position（Vector2）
+                    offset = 0 // Position (Vector2)
                 },
                 new VkVertexInputAttributeDescription
                 {
                     location = 1,
                     binding = 0,
                     format = VkFormat.VK_FORMAT_R32G32B32_SFLOAT,
-                    offset = 8 // Color（Vector3）
+                    offset = 8 // Color (Vector3)
                 }
             };
 
-            // 顶点绑定描述
+            // Vertex binding description
             var vertexBinding = new VkVertexInputBindingDescription
             {
                 binding = 0,
@@ -235,7 +235,7 @@ namespace LightVKMinimalDemo
                 inputRate = VkVertexInputRate.VK_VERTEX_INPUT_RATE_VERTEX
             };
 
-            // 混合模式（不混合）
+            // Blend mode (no blending)
             var blendAttachment = new VkPipelineColorBlendAttachmentState
             {
                 blendEnable = VkBool32.False,
@@ -245,7 +245,7 @@ namespace LightVKMinimalDemo
                                  VkColorComponentFlags.VK_COLOR_COMPONENT_A_BIT
             };
 
-            // 创建图形管线
+            // Create graphics pipeline
             _pipeline = _device.CreateGraphicsPipeline(
                 _renderPass,
                 new VkExtent2D(800, 600),
@@ -280,7 +280,7 @@ namespace LightVKMinimalDemo
 
         public unsafe void RenderFrame()
         {
-            // 1. 等待Fence空闲
+            // 1. Wait for Fence to be idle
             FrameFence currentFrame = _frameFences[frameIndex];
 
             fixed (VkFence* currentFramePtr = &currentFrame.InFlightFence)
@@ -289,41 +289,41 @@ namespace LightVKMinimalDemo
                 vkResetFences(_device.device, 1, currentFramePtr);
             }
 
-            // 2. 获取交换链图像
+            // 2. Acquire swap chain image
             uint imageIndex;
 
             vkAcquireNextImageKHR(_device.device, _swapChain.Chain, uint.MaxValue,
             _frameFences[frameIndex].ImageAvailable, VkFence.Null, &imageIndex);
 
-            // 3. 重置命令缓冲区并开始录制
+            // 3. Reset command buffer and start recording
             VkCommandBuffer presentCmd = _cmdBuffers.CMD[frameIndex];
 
             vkResetCommandBuffer(presentCmd, 0);
             _device.BeginCommandBuffer(presentCmd);
 
-            // 4. 开始渲染通道
+            // 4. Begin render pass
             _device.BeginRenderPass(presentCmd, _renderPass,
              _swapChain.framebuffes[(int)frameIndex],
              (int)_swapChain.Extent.width,
              (int)_swapChain.Extent.height,
              true, 0, 0, 0, 1);
 
-            // 5. 绑定管线和顶点缓冲区并设置视口和裁剪
+            // 5. Bind pipeline and vertex buffer, set viewport and scissor
             _device.BindGraphicsPipeline(presentCmd, _pipeline);
 
             var buffer = _vertexBuffer.stagingBuffer;
             var offset = 0ul;
             vkCmdBindVertexBuffers(presentCmd, 0, 1, &buffer, &offset);
 
-            // 6. 绘制三角形
+            // 6. Draw triangle
             vkCmdDraw(presentCmd, 3, 1, 0, 0);
 
-            // 7. 结束渲染通道和命令缓冲区
+            // 7. End render pass and command buffer
             vkCmdEndRenderPass(presentCmd);
 
             _device.EndCommandBuffer(presentCmd);
 
-            // 9. 提交命令缓冲区到队列
+            // 9. Submit command buffer to queue
             VkPipelineStageFlags waitStages = VkPipelineStageFlags.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
             VkSemaphore ws = currentFrame.ImageAvailable;
             VkSemaphore ss = currentFrame.RenderFinished;
@@ -341,7 +341,7 @@ namespace LightVKMinimalDemo
 
             vkQueueSubmit(_device.graphicsQueue, 1, &submitInfo, currentFrame.InFlightFence);
 
-            // 10. 呈现图像
+            // 10. Present image
             VkPresentInfoKHR presentInfo = new VkPresentInfoKHR
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
@@ -359,11 +359,11 @@ namespace LightVKMinimalDemo
 
         public unsafe void Dispose()
         {
-            // 等待队列空闲
+            // Wait for queues to be idle
             vkQueueWaitIdle(_device.graphicsQueue);
             vkQueueWaitIdle(_device.presentQueue);
 
-            // 销毁同步对象
+            // Destroy synchronization objects
             foreach (var fence in _frameFences)
             {
                 vkDestroySemaphore(_device.device, fence.ImageAvailable, null);
@@ -371,17 +371,17 @@ namespace LightVKMinimalDemo
                 vkDestroyFence(_device.device, fence.InFlightFence, null);
             }
 
-            // 销毁管线/缓冲区/渲染通道/交换链
+            // Destroy pipeline/buffers/render pass/swap chain
             _device.DestroyGraphicsPipeline(_pipeline);
             _device.DestoryBuffer(_vertexBuffer);
             _device.DestoryCommandBuffers(_cmdBuffers);
             _device.CleanupSwapChain(_swapChain);
             vkDestroyRenderPass(_device.device, _renderPass, null);
 
-            // 销毁Device
+            // Destroy Device
             _device.VulkanDispose();
 
-            Console.WriteLine("LightVK Demo 资源销毁完成！");
+            Console.WriteLine("LightVK Demo resource cleanup completed!");
         }
 
     }
@@ -400,7 +400,7 @@ namespace LightVKMinimalDemo
                 System.Threading.Thread.Sleep(16);
             }
 
-            Console.WriteLine("Demo 运行完成！");
+            Console.WriteLine("Demo execution completed!");
         }
     }
 }
