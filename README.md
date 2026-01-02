@@ -10,3 +10,6 @@ This binding is generated from vk.xml (https://github.com/KhronosGroup/Vulkan-Do
 
 #### Used in PS1 emulator ScePSX:
  - https://github.com/unknowall/ScePSX
+
+#### [LightVK.VulkanDevice] Demo
+<img width="802" height="632" alt="DEMO" src="https://github.com/user-attachments/assets/565962ea-2793-438b-9a4a-dd7c7c1b502a" />
