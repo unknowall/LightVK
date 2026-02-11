@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-
-#pragma warning disable CS8601
 
 namespace LightVK
 {
@@ -15,6 +14,8 @@ namespace LightVK
         public static FixedUtf8String EngineName { get; } = "VulkanRenderer";
         public static FixedUtf8String VK_KHR_SURFACE_EXTENSION_NAME { get; } = "VK_KHR_surface";
         public static FixedUtf8String VK_KHR_WIN32_SURFACE_EXTENSION_NAME { get; } = "VK_KHR_win32_surface";
+        public static FixedUtf8String VK_KHR_XLIB_SURFACE_EXTENSION_NAME { get; } = "VK_KHR_xlib_surface";
+        public static FixedUtf8String VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME { get; } = "VK_KHR_wayland_surface";
         public static FixedUtf8String VK_KHR_SWAPCHAIN_EXTENSION_NAME { get; } = "VK_KHR_swapchain";
         public static FixedUtf8String VK_EXT_DEBUG_REPORT_EXTENSION_NAME { get; } = "VK_EXT_debug_report";
         public static FixedUtf8String VK_LAYER_KHRONOS_validation { get; } = "VK_LAYER_KHRONOS_validation";
@@ -71,6 +72,7 @@ namespace LightVK
         public static implicit operator string(FixedUtf8String utf8String) => utf8String.GetString();
     }
 
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
     public struct vkFixedArray2<T> where T : struct
     {
         public T First;
@@ -85,6 +87,7 @@ namespace LightVK
         public uint Count => 2;
     }
 
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
     public struct vkFixedArray3<T> where T : struct
     {
         public T First;
@@ -101,6 +104,7 @@ namespace LightVK
         public uint Count => 3;
     }
 
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
     public struct vkFixedArray4<T> where T : struct
     {
         public T First;
@@ -119,6 +123,7 @@ namespace LightVK
         public uint Count => 4;
     }
 
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
     public struct vkFixedArray5<T> where T : struct
     {
         public T First;
@@ -139,6 +144,7 @@ namespace LightVK
         public uint Count => 5;
     }
 
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
     public struct vkFixedArray6<T> where T : struct
     {
         public T First;
@@ -161,6 +167,7 @@ namespace LightVK
         public uint Count => 6;
     }
 
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
     public static class vkFixedArray
     {
         public static vkFixedArray2<T> Create<T>(T first, T second) where T : struct
@@ -189,6 +196,7 @@ namespace LightVK
         }
     }
 
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
     public class vkRawList<T> : IEnumerable<T>
     {
         private T[] _items;
@@ -340,9 +348,7 @@ namespace LightVK
             return signedIndex != -1;
         }
 
-#pragma warning disable CS8625
         public void Sort() => Sort(null);
-#pragma warning restore CS8625
 
         public void Sort(IComparer<T> comparer)
         {
@@ -393,9 +399,7 @@ namespace LightVK
             }
 
             public T Current => _list._items[_currentIndex];
-#pragma warning disable CS8603
             object IEnumerator.Current => Current;
-#pragma warning restore CS8603
 
             public bool MoveNext()
             {
@@ -414,5 +418,3 @@ namespace LightVK
         }
     }
 }
-
-#pragma warning restore CS8601
