@@ -7,6 +7,8 @@ LightVK is a lightweight set of low-level Vulkan bindings for C#, automatically 
 
 For the complex procedural steps of Vulkan, LightVK offers lightweight abstract encapsulation that simplifies development while preserving native flexibility.
 
+Wiki: https://deepwiki.com/unknowall/LightVK
+
 <details>
 <summary><h3> 🌐 中文版说明</h3></summary>
 
