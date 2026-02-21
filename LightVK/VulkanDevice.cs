@@ -55,7 +55,9 @@ namespace LightVK
         {
             WIN,
             LINUX_XLIB,
-            LINUX_WAYLAND
+            LINUX_WAYLAND,
+            ANDROID,
+            MACOS
         }
 
         public struct vkSwapchain
@@ -130,8 +132,6 @@ namespace LightVK
 
         public unsafe void VulkanInit(IntPtr hwnd, IntPtr hinst, bool validation = false)
         {
-            Console.ForegroundColor = ConsoleColor.Blue;
-
             Console.WriteLine($"[Vulkan Device] VulkanDevice Initialization....");
 
             if (!validation)
@@ -153,14 +153,20 @@ namespace LightVK
             {
                 CreateSurfaceLinuxWayLand(hinst, hwnd);
             }
+            if (OperatingSystem.IsAndroid() || OsEnv == vkOsEnv.ANDROID)
+            {
+                CreateSurfaceAndroid(hwnd);
+            }
+            if (OperatingSystem.IsMacOS() || OsEnv == vkOsEnv.MACOS)
+            {
+                CreateSurfaceMacOS(hwnd);
+            }
             SelectPhysicalDevice();
             fixed (VkPhysicalDeviceProperties* ptr = &deviceProperties)
                 vkGetPhysicalDeviceProperties(physicalDevice, ptr);
             CreateLogicalDevice();
 
             Console.WriteLine($"[Vulkan Device] VulkanDevice Initializationed...");
-
-            Console.ResetColor();
 
             isinit = true;
         }
@@ -228,7 +234,15 @@ namespace LightVK
             }
             if (OperatingSystem.IsLinux() && OsEnv == vkOsEnv.LINUX_WAYLAND)
             {
-                Extensions.Add(vkStrings.VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
+                Extensions.Add(vkStrings.VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
+            }
+            if (OperatingSystem.IsAndroid() || OsEnv == vkOsEnv.ANDROID)
+            {
+                Extensions.Add(vkStrings.VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
+            }
+            if (OperatingSystem.IsMacOS() || OsEnv == vkOsEnv.MACOS)
+            {
+                Extensions.Add(vkStrings.VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
             }
 
             fixed (IntPtr* extensionsBase = &Extensions.Items[0])
@@ -243,6 +257,15 @@ namespace LightVK
                 }
                 if (result != VkResult.VK_SUCCESS)
                 {
+                    Console.WriteLine($"vkCreateInstance failed with: {result}");
+
+                    if (result == VkResult.VK_ERROR_EXTENSION_NOT_PRESENT)
+                        Console.WriteLine("fail: VK_ERROR_EXTENSION_NOT_PRESENT");
+                    else if (result == VkResult.VK_ERROR_LAYER_NOT_PRESENT)
+                        Console.WriteLine("fail：VK_ERROR_LAYER_NOT_PRESENT");
+                    else if (result == VkResult.VK_ERROR_INCOMPATIBLE_DRIVER)
+                        Console.WriteLine("fail：VK_ERROR_INCOMPATIBLE_DRIVER");
+
                     throw new Exception("Failed to create Vulkan instance!");
                 }
             }
@@ -270,13 +293,21 @@ namespace LightVK
             {
                 Extensions.Add(vkStrings.VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
             }
-            if (OperatingSystem.IsLinux() || OsEnv== vkOsEnv.LINUX_XLIB)
+            if (OperatingSystem.IsLinux() || OsEnv == vkOsEnv.LINUX_XLIB)
             {
                 Extensions.Add(vkStrings.VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
             }
             if (OperatingSystem.IsLinux() && OsEnv == vkOsEnv.LINUX_WAYLAND)
             {
-                Extensions.Add(vkStrings.VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
+                Extensions.Add(vkStrings.VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
+            }
+            if (OperatingSystem.IsAndroid() || OsEnv == vkOsEnv.ANDROID)
+            {
+                Extensions.Add(vkStrings.VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
+            }
+            if (OperatingSystem.IsMacOS() || OsEnv == vkOsEnv.MACOS)
+            {
+                Extensions.Add(vkStrings.VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
             }
             Extensions.Add(vkStrings.VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 
@@ -399,18 +430,56 @@ namespace LightVK
 
         private unsafe void CreateSurfaceLinuxWayLand(IntPtr display, IntPtr window)
         {
-            var surfaceCreateInfo = new VkXlibSurfaceCreateInfoKHR
+            var surfaceCreateInfo = new VkWaylandSurfaceCreateInfoKHR
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR,
-                dpy = display,
-                window = (IntPtr)(uint)window
+                display = display,
+                surface = (IntPtr)(uint)window
             };
 
             fixed (VkSurfaceKHR* surface = &this.surface)
             {
-                if (vkCreateXlibSurfaceKHR(instance, &surfaceCreateInfo, null, surface) != VkResult.VK_SUCCESS)
+                if (vkCreateWaylandSurfaceKHR(instance, &surfaceCreateInfo, null, surface) != VkResult.VK_SUCCESS)
                 {
-                    throw new Exception("Failed to create Vulkan X11 Surface!");
+                    throw new Exception("Failed to create Vulkan WayLand Surface!");
+                }
+            }
+        }
+
+        private unsafe void CreateSurfaceAndroid(IntPtr window)
+        {
+            var surfaceCreateInfo = new VkAndroidSurfaceCreateInfoKHR
+            {
+                sType = VkStructureType.VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
+                window = window,
+                pNext = null,
+                flags = 0,
+            };
+
+            fixed (VkSurfaceKHR* surface = &this.surface)
+            {
+                if (vkCreateAndroidSurfaceKHR(instance, &surfaceCreateInfo, null, surface) != VkResult.VK_SUCCESS)
+                {
+                    throw new Exception("Failed to create Vulkan Android Surface!");
+                }
+            }
+        }
+
+        private unsafe void CreateSurfaceMacOS(IntPtr window)
+        {
+            var surfaceCreateInfo = new VkMacOSSurfaceCreateInfoMVK
+            {
+                sType = VkStructureType.VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK,
+                pView = (void*)window,
+                pNext = null,
+                flags = 0,
+            };
+
+            fixed (VkSurfaceKHR* surface = &this.surface)
+            {
+                if (vkCreateMacOSSurfaceMVK(instance, &surfaceCreateInfo, null, surface) != VkResult.VK_SUCCESS)
+                {
+                    throw new Exception("Failed to create Vulkan MacOS Surface!");
                 }
             }
         }
@@ -418,8 +487,8 @@ namespace LightVK
         private unsafe void SelectPhysicalDevice()
         {
             uint deviceCount = 0;
-            vkEnumeratePhysicalDevices(instance, &deviceCount, null);
-
+            var result = vkEnumeratePhysicalDevices(instance, &deviceCount, null);
+            Console.WriteLine($"vkEnumeratePhysicalDevices result: {result}, deviceCount: {deviceCount}");
             if (deviceCount == 0)
             {
                 throw new Exception("No Vulkan-capable physical devices found!");

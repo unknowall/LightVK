@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -16,9 +15,12 @@ namespace LightVK
         public static FixedUtf8String VK_KHR_WIN32_SURFACE_EXTENSION_NAME { get; } = "VK_KHR_win32_surface";
         public static FixedUtf8String VK_KHR_XLIB_SURFACE_EXTENSION_NAME { get; } = "VK_KHR_xlib_surface";
         public static FixedUtf8String VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME { get; } = "VK_KHR_wayland_surface";
+        public static FixedUtf8String VK_KHR_ANDROID_SURFACE_EXTENSION_NAME { get; } = "VK_KHR_android_surface";
+        public static FixedUtf8String VK_MVK_MACOS_SURFACE_EXTENSION_NAME { get; } = "VK_MVK_macos_surface";
         public static FixedUtf8String VK_KHR_SWAPCHAIN_EXTENSION_NAME { get; } = "VK_KHR_swapchain";
         public static FixedUtf8String VK_EXT_DEBUG_REPORT_EXTENSION_NAME { get; } = "VK_EXT_debug_report";
         public static FixedUtf8String VK_LAYER_KHRONOS_validation { get; } = "VK_LAYER_KHRONOS_validation";
+        public static FixedUtf8String VK_EXT_metal_surface { get; } = "VK_EXT_metal_surface";
         public static FixedUtf8String VK_EXT_descriptor_indexing { get; } = "VK_EXT_descriptor_indexing";
         public static FixedUtf8String VK_KHR_timeline_semaphore { get; } = "VK_KHR_timeline_semaphore";
         public static FixedUtf8String main { get; } = "main";
@@ -72,7 +74,6 @@ namespace LightVK
         public static implicit operator string(FixedUtf8String utf8String) => utf8String.GetString();
     }
 
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
     public struct vkFixedArray2<T> where T : struct
     {
         public T First;
@@ -87,7 +88,6 @@ namespace LightVK
         public uint Count => 2;
     }
 
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
     public struct vkFixedArray3<T> where T : struct
     {
         public T First;
@@ -104,7 +104,6 @@ namespace LightVK
         public uint Count => 3;
     }
 
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
     public struct vkFixedArray4<T> where T : struct
     {
         public T First;
@@ -123,7 +122,6 @@ namespace LightVK
         public uint Count => 4;
     }
 
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
     public struct vkFixedArray5<T> where T : struct
     {
         public T First;
@@ -144,7 +142,6 @@ namespace LightVK
         public uint Count => 5;
     }
 
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
     public struct vkFixedArray6<T> where T : struct
     {
         public T First;
@@ -167,7 +164,6 @@ namespace LightVK
         public uint Count => 6;
     }
 
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
     public static class vkFixedArray
     {
         public static vkFixedArray2<T> Create<T>(T first, T second) where T : struct
@@ -196,7 +192,6 @@ namespace LightVK
         }
     }
 
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
     public class vkRawList<T> : IEnumerable<T>
     {
         private T[] _items;
